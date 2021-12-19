@@ -101,46 +101,30 @@ void dimAll(byte value)
 
 // List of patterns to cycle through.  Each is defined as a separate function below.
 
-// NOTE: HAS_POLAR_COORDS implies HAS_COORDINATE_MAP
-//       IS_FIBONACCI implies HAS_COORDINATE_MAP
-
-// TODO: Consider patterns listing name and all variants:
-//       [] original variant
-//       [] fibonacci variant (or nullptr)
-//       [] concentric ring variant (or nullptr)
-//       [] coordinates variant (or nullptr)
-// WHY #1: Easier to manage defining the patterns via a macro,
-//         which discards arguments that do not apply for a given
-//         board, than this #if/#endif spaghetti mess.
-// WHY #2: Easier for users to see correlations between the patterns,
-//         when switching between them.
-// WHY #3: May eventually be able to change mapping for standard
-//         effects (emulating led array, but using custom mapping),
-//         which could further reduce code duplication.
+// NOTE: IS_FIBONACCI implies HAS_COORDINATE_MAP
 
 const PatternAndName patterns[] = {
-  { pride,          "Pride" },
+  { pride,                             "Pride" },
 #if IS_FIBONACCI
-  { prideFibonacci, "Pride Fibonacci" },
+  { prideFibonacci,                    "Pride Fibonacci" },
 #endif
 
-  { colorWaves,             "Color Waves" },
+  { colorWaves,                        "Color Waves" },
 #if IS_FIBONACCI
   { colorWavesFibonacci,               "Color Waves Fibonacci" },
 #endif
 
-#if IS_FIBONACCI
   { pridePlayground,                   "Pride Playground" },
+#if IS_FIBONACCI
   { pridePlaygroundFibonacci,          "Pride Playground Fibonacci" },
+#endif
 
   { colorWavesPlayground,              "Color Waves Playground" },
+#if IS_FIBONACCI
   { colorWavesPlaygroundFibonacci,     "Color Waves Playground Fibonacci" },
 #endif
 
-  { wheel,                  "Wheel" },
-#if (PARALLEL_OUTPUT_CHANNELS > 1)
-  { multi_test,             "Multi Test" },
-#endif
+  { wheel,                             "Wheel" },
 
 #if IS_FIBONACCI
   { swirlFibonacci,                    "Swirl Fibonacci"},
@@ -153,7 +137,7 @@ const PatternAndName patterns[] = {
 #endif
 
 #if HAS_COORDINATE_MAP // really a wrong name... and likely doing way more computation than necessary
-  { radarSweepPalette, "Radar Sweep Palette" },
+  { radarSweepPalette,                 "Radar Sweep Palette" },
 #endif
 
 #if HAS_COORDINATE_MAP
@@ -169,10 +153,8 @@ const PatternAndName patterns[] = {
   { xGradientPalette,                  "X Axis Gradient Palette" },
   { yGradientPalette,                  "Y Axis Gradient Palette" },
   { xyGradientPalette,                 "XY Axis Gradient Palette" },
-#endif
 
-#if HAS_POLAR_COORDS // really a wrong name... and likely doing way more computation than necessary
-  // noise patterns (Polar variations)
+  // noise patterns
   { gradientPalettePolarNoise,         "Gradient Palette Polar Noise" },
   { palettePolarNoise,                 "Palette Polar Noise" },
   { firePolarNoise,                    "Fire Polar Noise" },
@@ -186,10 +168,9 @@ const PatternAndName patterns[] = {
   { oceanPolarNoise,                   "Ocean Polar Noise" },
   { blackAndWhitePolarNoise,           "Black & White Polar Noise" },
   { blackAndBluePolarNoise,            "Black & Blue Polar Noise" },
-#endif
 
-#if HAS_COORDINATE_MAP
-  // noise patterns
+  { gradientPaletteNoise,              "Gradient Palette Noise" },
+  { paletteNoise,                      "Palette Noise" },
   { fireNoise,                         "Fire Noise" },
   { fireNoise2,                        "Fire Noise 2" },
   { lavaNoise,                         "Lava Noise" },
@@ -201,11 +182,11 @@ const PatternAndName patterns[] = {
   { oceanNoise,                        "Ocean Noise" },
   { blackAndWhiteNoise,                "Black & White Noise" },
   { blackAndBlueNoise,                 "Black & Blue Noise" },
+  
+  { drawAnalogClock,                   "Analog Clock" },
 #endif
 
 #if IS_FIBONACCI
-  { drawAnalogClock,                   "Analog Clock" },
-
   { drawSpiralAnalogClock13,           "Spiral Analog Clock 13" },
   { drawSpiralAnalogClock21,           "Spiral Analog Clock 21" },
   { drawSpiralAnalogClock34,           "Spiral Analog Clock 34" },
@@ -217,13 +198,10 @@ const PatternAndName patterns[] = {
   { drawSpiralAnalogClock34_21_and_13, "Spiral Analog Clock 34, 21 & 13"},
 #endif
 
-  { pridePlayground,        "Pride Playground" },
-  { colorWavesPlayground,   "Color Waves Playground" },
-
 #if defined(PRODUCT_KRAKEN64)
   // Kraken patterns ... these use body[], which is also used as a proxy for radius...
-  { radiusPalette,             "Kraken Palette" },
-  { radiusGradientPalette,     "Kraken Gradient Palette" },
+  { radiusPalette,                     "Kraken Palette" },
+  { radiusGradientPalette,             "Kraken Gradient Palette" },
 #endif
 
   // twinkle patterns
@@ -259,6 +237,9 @@ const PatternAndName patterns[] = {
   { water,                  "Water" },
 
   { strandTest,             "Strand Test" },
+#if (PARALLEL_OUTPUT_CHANNELS > 1)
+  { multi_test,             "Multi Test" },
+#endif
 
   { showSolidColor,         "Solid Color" } // This *must* be the last pattern
 };
@@ -760,7 +741,7 @@ void loop() {
   // Call the current pattern function once, updating the 'leds' array
   patterns[currentPatternIndex].pattern();
 
-  #if IS_FIBONACCI
+  #if HAS_COORDINATE_MAP
   if (showClock) drawAnalogClock();
   #endif
 
