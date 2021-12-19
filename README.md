@@ -1,3 +1,18 @@
+### Custom Notes
+- Info for plattform.io: https://github.com/jasoncoon/esp8266-fastled-webserver/discussions/207#discussioncomment-1655195
+- Usage:
+0. Set WIFI Configuration in esp8266-fastled-webserver/esp8266-fastled-webserver.ino
+1. Default: Build All
+2. fib512_d1_mini: Build
+3. fib512_d1_mini: Upload
+4. fib512_d1_mini: Build Filesystem Image
+5. fib512_d1_mini: Upload Filesystem Image
+
+Flash does not work on MacBook :( 
+
+
+=========
+
 FastLED + ESP8266 Web Server
 =========
 

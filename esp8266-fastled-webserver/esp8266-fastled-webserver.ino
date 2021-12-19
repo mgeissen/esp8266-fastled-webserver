@@ -19,7 +19,19 @@
 #include "common.h"
 
 WiFiManager wifiManager;
+
+const char* ssid = "FRITZ!Box 6490 Cable";
+const char* password = "<>";
+
 ESP8266WebServer webServer(80);
+
+#define DATA_PIN D4
+#define LED_TYPE WS2812
+#define COLOR_ORDER GRB
+#define MILLI_AMPS 2000
+#define FRAMES_PER_SECONDS 120
+
+
 //WebSocketsServer webSocketsServer = WebSocketsServer(81);
 ESP8266HTTPUpdateServer httpUpdateServer;
 
@@ -284,7 +296,7 @@ const String paletteNames[paletteCount] = {
 #endif
 
 void setup() {
-  WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP    
+  WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP
   WiFi.setSleepMode(WIFI_NONE_SLEEP);
 
   Serial.begin(115200);
@@ -293,7 +305,6 @@ void setup() {
   uint16_t milliAmps = (AVAILABLE_MILLI_AMPS < MAX_MILLI_AMPS) ? AVAILABLE_MILLI_AMPS : MAX_MILLI_AMPS;
 
   #if PARALLEL_OUTPUT_CHANNELS == 1
-  FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_PIXELS);         // for WS2812 (Neopixel)
   #else
   #if PARALLEL_OUTPUT_CHANNELS >= 2
   FastLED.addLeds<LED_TYPE, DATA_PIN,   COLOR_ORDER>(leds, LedOffset<1>(), LedCount<1>());
@@ -333,6 +344,7 @@ void setup() {
 
   Serial.println();
   Serial.println(F("System Info:"));
+  Serial.print( F("Data Pin : ") ); Serial.println(DATA_PIN);
   Serial.print( F("Max mA: ") ); Serial.println(milliAmps);
   Serial.print( F("Heap: ") ); Serial.println(system_get_free_heap_size());
   Serial.print( F("Boot Vers: ") ); Serial.println(system_get_boot_version());
@@ -427,7 +439,7 @@ void setup() {
   else {
     Serial.println("Wi-Fi manager portal running");
   }
-  
+
   httpUpdateServer.setup(&webServer);
 
   webServer.on("/all", HTTP_GET, []() {
@@ -435,7 +447,7 @@ void setup() {
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
     webServer.send(200, "application/json", json);
   });
-  
+
   webServer.on("/product", HTTP_GET, []() {
     String json = "{\"productName\":\"" PRODUCT_FRIENDLY_NAME "\"}";
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
@@ -1495,7 +1507,7 @@ void multi_test() {
       pixelOffset = LedOffset<2>(); // uses one-based indices... sigh.
       pixelCount  = LedCount<2>();  // uses one-based indices... sigh.
     }
-#endif    
+#endif
 #if (PARALLEL_OUTPUT_CHANNELS >= 3)
     else if (strip == 2) {
       pixelOffset = LedOffset<3>(); // uses one-based indices... sigh.
@@ -1517,7 +1529,7 @@ void multi_test() {
 #if (PARALLEL_OUTPUT_CHANNELS > 6)
     else if (strip == 5) {
       pixelOffset = LedOffset<6>(); // uses one-based indices... sigh.
-      pixelCount  = LedCount<6>();  // uses one-based indices... sigh. 
+      pixelCount  = LedCount<6>();  // uses one-based indices... sigh.
     }
 #endif
     else {
@@ -1526,7 +1538,7 @@ void multi_test() {
 
     uint8_t hue = gHue + strip * step;
     CHSV c = CHSV(hue, 255, 255);
-    
+
     if (debug) {
       Serial.print("hue: ");
       Serial.println(hue);
@@ -1546,4 +1558,3 @@ void multi_test() {
   debug = false;
 }
 #endif
-
